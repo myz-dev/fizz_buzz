@@ -4,9 +4,9 @@ use crate::{
 };
 
 /// Loops through the range `1..=t` and returns a `String`, that conforms to
-/// to a specific set of rules.
+/// to the passed set of `rules`.
 ///
-/// These rules are:
+/// E.g. if these rules are:
 /// Add a new line containing `t`, if none of the following criteria are met:
 ///  -  if t % f == 0                        ==> add a new line containing `Fizz`
 ///  -  if t % b == 0                        ==> add a new line containing `Buzz`
@@ -15,7 +15,7 @@ use crate::{
 ///     condition for `Buzz` is met          ==> Fizz++
 ///     For each additional `t % f == 0` a `plus` is appended to the string.
 ///     Same goes for repeatedly meeting `t % b == 0`
-///
+/// Where
 /// * `t` - Number of iterations.
 /// * `f` - Rule to trigger `Fizz` outputs.
 /// * `b` - Rule to trigger `Buzz` outputs.
@@ -42,7 +42,7 @@ struct Tokenizer {
 }
 
 impl Tokenizer {
-    /// Create new `Tokenizer` object with yet empty `tokens` list.
+    /// Create new `Tokenizer` object.
     pub fn new(rules: Vec<Rule>) -> Self {
         Self { rules }
     }

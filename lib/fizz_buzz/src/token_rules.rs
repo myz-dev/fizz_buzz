@@ -1,5 +1,9 @@
 use crate::error::{FizzBuzzError, Result};
 
+/// A `Rule` specifies a set of conditions for producing a defined token
+/// (i.e. "Fizz" or "Buzz" etc.).
+/// Each `Rule` is created with a `priority` value, that determines which
+/// rule to use, when multiple rule's conditions are all met at the same time.
 #[derive(Debug)]
 pub struct Rule {
     conditions: Vec<Condition>,
@@ -9,6 +13,9 @@ pub struct Rule {
 }
 
 impl Rule {
+    /// Creates a new `Rule` based on the passed set of `conditions`.
+    /// # Error
+    /// This function returns an error, if the set of conditions is invalid.
     pub fn new(conditions: Vec<Condition>, token: RawToken, priority: u32) -> Result<Self> {
         let multiple_consecutive_in_rule = conditions
             .iter()
@@ -37,6 +44,8 @@ impl Rule {
         })
     }
 
+    /// Creates a default rule set that can be used to run `FizzBuzz` in a more
+    /// traditional setting.
     pub fn default_rule_set(f: u32, b: u32) -> Vec<Self> {
         vec![
             Self {
@@ -68,6 +77,8 @@ impl Rule {
         ]
     }
 
+    /// Returns an error if the passed rule set is empty.
+    /// For now the emptiness check is the only existing rule set validation.
     pub fn validate_rule_set(rules: &[Self]) -> Result<()> {
         if rules.is_empty() {
             return Err(FizzBuzzError::InvalidRuleConfiguration(
@@ -75,34 +86,41 @@ impl Rule {
             ));
         }
 
-        // Check that each rule contains at most one `Condition::Consecutive` element.
-        for r in rules {
-            let multiple_consecutive_in_rule = r
-                .conditions
-                .iter()
-                .filter(|c| {
-                    matches!(
-                        c,
-                        Condition::Consecutive {
-                            rivals: _,
-                            divisor: _,
-                        }
-                    )
-                })
-                .count()
-                > 1;
-            if multiple_consecutive_in_rule {
-                return Err(FizzBuzzError::InvalidRuleConfiguration(
-                    "Each rule can have at most one \
-                        consecutive condition!"
-                        .to_string(),
-                ));
-            }
-        }
-
+        // // Check that each rule contains at most one `Condition::Consecutive` element.
+        // for r in rules {
+        //     let multiple_consecutive_in_rule = r
+        //         .conditions
+        //         .iter()
+        //         .filter(|c| {
+        //             matches!(
+        //                 c,
+        //                 Condition::Consecutive {
+        //                     rivals: _,
+        //                     divisor: _,
+        //                 }
+        //             )
+        //         })
+        //         .count()
+        //         > 1;
+        //     if multiple_consecutive_in_rule {
+        //         return Err(FizzBuzzError::InvalidRuleConfiguration(
+        //             "Each rule can have at most one \
+        //                 consecutive condition!"
+        //                 .to_string(),
+        //         ));
+        //     }
+        // }
         Ok(())
     }
 
+    /// Tries to construct the `Token`, that the `Rule` would produce at the current
+    /// iteration `i`.
+    /// # Error
+    /// Returns an error, if the rule is configured to produce a token, that can not
+    /// be produced by the conditions provided in the rule.
+    /// This can be the case if e.g. a `RawToken`'s corresponding `Token` would require
+    /// a specific condition to be met, but that condition is not contained in the `Rule`'s
+    /// set of conditions.
     pub fn try_tokenize(&self, i: u32) -> Result<Option<Token>> {
         let mut met_count = 0;
         let mut maybe_consecutive = None;
