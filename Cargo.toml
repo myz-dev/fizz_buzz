@@ -1,2 +1,2 @@
 [workspace]
-members = ["lib/fizz_buzz"]
+members = ["bin/cli", "lib/fizz_buzz"]

@@ -6,7 +6,7 @@ use crate::{
 };
 
 /// Function for ergonomic test set up.
-/// Creates a [`Tokenizer`] that conforms the FizzBuzz++ rules.
+/// Creates a [`Tokenizer`] that conforms to the FizzBuzz++ rules.
 fn create_default_tokenizer(f: u32, b: u32) -> (Tokenizer, FormattingOptions) {
     let options = crate::FormattingOptions {
         separator: Some("\n".to_string()),
