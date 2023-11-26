@@ -1,6 +1,7 @@
 use crate::{
     error::{FizzBuzzError, Result},
-    token_rules::{Rule, Token},
+    token_rules::Token,
+    Rule,
 };
 
 /// Loops through the range `1..=t` and returns a `String`, that conforms to
