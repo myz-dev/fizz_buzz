@@ -1,3 +1,4 @@
+use crate::token_rules::RawToken;
 use crate::{
     error::FizzBuzzError,
     fizz_buzz,
@@ -28,7 +29,7 @@ fn test_fizz_butt_output() {
         },
     ];
 
-    let err = Rule::new(conditions, crate::token_rules::RawToken::Buzz, 1).unwrap_err();
+    let err = Rule::new(conditions, RawToken::Buzz, 1).unwrap_err();
     match err {
         FizzBuzzError::InvalidRuleConfiguration(_) => (),
         _ => panic!("Wrong error type!"),
@@ -58,6 +59,49 @@ Fizz
 Fizz+
 19
 Fizz++"#;
+
+    let rules = Rule::default_rule_set(f, b);
+    let res = fizz_buzz(t, f, b, rules).unwrap();
+    assert_eq!(&res, expected);
+
+    // ----------------------  Run with + on second rule  ----------------------- //
+    let f = 5;
+    let b = 3;
+    let t = 15;
+    let expected = r#"1
+2
+Buzz
+4
+Fizz
+Buzz
+7
+8
+Buzz+
+Fizz
+11
+Buzz
+13
+14
+FizzBuzz"#;
+
+    let rules = Rule::default_rule_set(f, b);
+    let res = fizz_buzz(t, f, b, rules).unwrap();
+    assert_eq!(&res, expected);
+
+    // -------------------------   f equals b   ------------------------- //
+    let f = 2;
+    let b = 2;
+    let t = 10;
+    let expected = r#"1
+FizzBuzz
+3
+FizzBuzz
+5
+FizzBuzz
+7
+FizzBuzz
+9
+FizzBuzz"#;
 
     let rules = Rule::default_rule_set(f, b);
     let res = fizz_buzz(t, f, b, rules).unwrap();
