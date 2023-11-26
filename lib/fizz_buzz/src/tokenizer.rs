@@ -51,9 +51,9 @@ mod test {
     #[test]
     fn test_tokenizer() {
         let value = Box::new(Numeric);
-        let fizz = Box::new(Traditional::new("Fizz", 1, vec![2]));
-        let buzz = Box::new(Traditional::new("Buzz", 1, vec![3]));
-        let fizz_buzz = Box::new(Traditional::new("FizzBuzz", 2, vec![2, 3]));
+        let fizz = Box::new(Traditional::new("Fizz", 1, vec![2]).unwrap());
+        let buzz = Box::new(Traditional::new("Buzz", 1, vec![3]).unwrap());
+        let fizz_buzz = Box::new(Traditional::new("FizzBuzz", 2, vec![2, 3]).unwrap());
 
         let tokenizer = Tokenizer::new(vec![fizz, buzz, fizz_buzz, value]);
 

@@ -1,38 +1,38 @@
-use crate::token_rules::RawToken;
-use crate::{
-    error::FizzBuzzError,
-    fizz_buzz,
-    token_rules::{Condition, Rule},
-};
 use pretty_assertions::assert_eq;
+
+use crate::{
+    error::FizzBuzzError, presets::ConsecutiveTokens, FormattingOptions, Numeric, Tokenizer,
+    Traditional,
+};
+
+/// Function for ergonomic test set up.
+/// Creates a [`Tokenizer`] that conforms the FizzBuzz++ rules.
+fn create_default_tokenizer(f: u32, b: u32) -> (Tokenizer, FormattingOptions) {
+    let options = crate::FormattingOptions {
+        separator: Some("\n".to_string()),
+        case: None,
+    };
+
+    let fall_back = Box::new(Numeric);
+    let fizz = Box::new(ConsecutiveTokens::new("Fizz", "+", 1, f, vec![b]).unwrap());
+    let buzz = Box::new(ConsecutiveTokens::new("Buzz", "+", 1, b, vec![f]).unwrap());
+    let fizz_buzz = Box::new(Traditional::new("FizzBuzz", 2, vec![f, b]).unwrap());
+
+    let tokenizer = Tokenizer::new(vec![fall_back, fizz, buzz, fizz_buzz]);
+    (tokenizer, options)
+}
+
 #[test]
 fn test_fizz_butt_output() {
     // ------------------------- Passing zero ==> Error ------------------------- //
-    let rules = Rule::default_rule_set(1, 2);
-    let err = fizz_buzz(0, rules).unwrap_err();
-    assert_eq!(FizzBuzzError::NonZeroValue, err);
+    let rule_err = Traditional::new("Fizz", 1, vec![0]).unwrap_err();
+    assert_eq!(FizzBuzzError::NonZeroValue, rule_err);
 
-    let zero_rule_err = Rule::new(vec![Condition::Divisor(0)], RawToken::Buzz, 1).unwrap_err();
-    assert_eq!(FizzBuzzError::NonZeroValue, zero_rule_err);
+    let rule_err = ConsecutiveTokens::new("Fizz", "+", 1, 0, vec![1, 2]).unwrap_err();
+    assert_eq!(FizzBuzzError::NonZeroValue, rule_err);
 
-    // ------------   Constructing invalid `Rule` ==> Error  -------------------- //
-    let conditions = vec![
-        Condition::Consecutive {
-            divisor: 1,
-            rivals: vec![2, 3],
-        },
-        Condition::Consecutive {
-            divisor: 4,
-            rivals: vec![1, 6],
-        },
-    ];
-
-    let err = Rule::new(conditions, RawToken::Buzz, 1).unwrap_err();
-    match err {
-        FizzBuzzError::InvalidRuleConfiguration(_) => (),
-        _ => panic!("Wrong error type!"),
-    }
-
+    let rule_err = ConsecutiveTokens::new("Fizz", "+", 1, 4, vec![1, 0]).unwrap_err();
+    assert_eq!(FizzBuzzError::NonZeroValue, rule_err);
     // -------------------------        Example run     ------------------------- //
     let f = 2;
     let b = 7;
@@ -58,9 +58,9 @@ Fizz+
 19
 Fizz++"#;
 
-    let rules = Rule::default_rule_set(f, b);
-    let res = fizz_buzz(t, rules).unwrap();
-    assert_eq!(&res, expected);
+    let (tokenizer, options) = create_default_tokenizer(f, b);
+    let output = tokenizer.produce_output(t, options).unwrap();
+    assert_eq!(&output, expected);
 
     // ----------------------  Run with + on second rule  ----------------------- //
     let f = 5;
@@ -81,10 +81,9 @@ Buzz
 13
 14
 FizzBuzz"#;
-
-    let rules = Rule::default_rule_set(f, b);
-    let res = fizz_buzz(t, rules).unwrap();
-    assert_eq!(&res, expected);
+    let (tokenizer, options) = create_default_tokenizer(f, b);
+    let output = tokenizer.produce_output(t, options).unwrap();
+    assert_eq!(&output, expected);
 
     // -------------------------   f equals b   ------------------------- //
     let f = 2;
@@ -101,7 +100,28 @@ FizzBuzz
 9
 FizzBuzz"#;
 
-    let rules = Rule::default_rule_set(f, b);
-    let res = fizz_buzz(t, rules).unwrap();
-    assert_eq!(&res, expected);
+    let (tokenizer, options) = create_default_tokenizer(f, b);
+    let output = tokenizer.produce_output(t, options).unwrap();
+    assert_eq!(&output, expected);
 }
+
+// #[test]
+// fn test_three_tokens() {
+//     let f = 2;
+//     let b = 9;
+//     let m = 5;
+//     let t = 15;
+
+//     let options = crate::FormattingOptions {
+//         separator: Some("\n".to_string()),
+//         case: None,
+//     };
+
+//     let fall_back = Box::new(Numeric);
+//     let fizz = Box::new(ConsecutiveTokens::new("Fizz", "+", 1, f, vec![b]).unwrap());
+//     let buzz = Box::new(ConsecutiveTokens::new("Buzz", "+", 1, b, vec![f]).unwrap());
+//     let buzz = Box::new(ConsecutiveTokens::new("Mezz", "+", 1, b, vec![f]).unwrap());
+//     let fizz_buzz = Box::new(Traditional::new("FizzBuzz", 2, vec![f, b]).unwrap());
+
+//     let tokenizer = Tokenizer::new(vec![fall_back, fizz, buzz, fizz_buzz]);
+// }

@@ -1,14 +1,15 @@
 pub mod error;
-mod fizzer;
-mod token_rules;
 
-mod token_condition;
-mod tokenizer;
 mod formatting;
 mod presets;
+mod token_condition;
+mod tokenizer;
 
-pub use fizzer::fizz_buzz;
-pub use token_rules::Rule;
+// API:
+pub use formatting::{Case, FormattingOptions};
+pub use presets::{ConsecutiveTokens, Numeric, Traditional};
+pub use token_condition::TokenCondition;
+pub use tokenizer::Tokenizer;
 
 #[cfg(test)]
 mod test;
