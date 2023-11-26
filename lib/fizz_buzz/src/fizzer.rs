@@ -22,8 +22,8 @@ use crate::{
 ///
 /// # Error
 /// Returns an [`FizzBuzzError`] if any of the passed arguments equal to zero.
-pub fn fizz_buzz(t: u32, f: u32, b: u32, rules: Vec<Rule>) -> Result<String> {
-    if t == 0 || f == 0 || b == 0 {
+pub fn fizz_buzz(t: u32, rules: Vec<Rule>) -> Result<String> {
+    if t == 0 {
         return Err(FizzBuzzError::NonZeroValue);
     }
     Rule::validate_rule_set(&rules)?;

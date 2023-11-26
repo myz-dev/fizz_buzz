@@ -37,6 +37,16 @@ impl Rule {
                     .to_string(),
             ));
         }
+
+        let zero_included = conditions.iter().any(|c| match c {
+            Condition::Divisor(v) => v == &0,
+            Condition::Consecutive { divisor, rivals } => divisor == &0 || rivals.contains(&0),
+            Condition::Value => false,
+        });
+        if zero_included {
+            return Err(FizzBuzzError::NonZeroValue);
+        }
+
         Ok(Self {
             conditions,
             token,
@@ -44,6 +54,7 @@ impl Rule {
         })
     }
 
+    #[cfg(test)]
     /// Creates a default rule set that can be used to run `FizzBuzz` in a more
     /// traditional setting.
     pub fn default_rule_set(f: u32, b: u32) -> Vec<Self> {

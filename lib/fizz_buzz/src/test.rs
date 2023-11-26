@@ -8,14 +8,12 @@ use pretty_assertions::assert_eq;
 #[test]
 fn test_fizz_butt_output() {
     // ------------------------- Passing zero ==> Error ------------------------- //
-    let err = fizz_buzz(0, 1, 2, Vec::new()).unwrap_err();
+    let rules = Rule::default_rule_set(1, 2);
+    let err = fizz_buzz(0, rules).unwrap_err();
     assert_eq!(FizzBuzzError::NonZeroValue, err);
 
-    let err = fizz_buzz(2, 0, 2, Vec::new()).unwrap_err();
-    assert_eq!(FizzBuzzError::NonZeroValue, err);
-
-    let err = fizz_buzz(3, 1, 0, Vec::new()).unwrap_err();
-    assert_eq!(FizzBuzzError::NonZeroValue, err);
+    let zero_rule_err = Rule::new(vec![Condition::Divisor(0)], RawToken::Buzz, 1).unwrap_err();
+    assert_eq!(FizzBuzzError::NonZeroValue, zero_rule_err);
 
     // ------------   Constructing invalid `Rule` ==> Error  -------------------- //
     let conditions = vec![
@@ -61,7 +59,7 @@ Fizz+
 Fizz++"#;
 
     let rules = Rule::default_rule_set(f, b);
-    let res = fizz_buzz(t, f, b, rules).unwrap();
+    let res = fizz_buzz(t, rules).unwrap();
     assert_eq!(&res, expected);
 
     // ----------------------  Run with + on second rule  ----------------------- //
@@ -85,7 +83,7 @@ Buzz
 FizzBuzz"#;
 
     let rules = Rule::default_rule_set(f, b);
-    let res = fizz_buzz(t, f, b, rules).unwrap();
+    let res = fizz_buzz(t, rules).unwrap();
     assert_eq!(&res, expected);
 
     // -------------------------   f equals b   ------------------------- //
@@ -104,6 +102,6 @@ FizzBuzz
 FizzBuzz"#;
 
     let rules = Rule::default_rule_set(f, b);
-    let res = fizz_buzz(t, f, b, rules).unwrap();
+    let res = fizz_buzz(t, rules).unwrap();
     assert_eq!(&res, expected);
 }
